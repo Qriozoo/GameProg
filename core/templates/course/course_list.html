@@ -1,9 +1,7 @@
 {% extends 'profile/base.html' %}
 
 {% block content %}
-    <h1>Dashboard page of {{user.username}}</h1>
-    <h1><p>Ваши курсы:</p></h1>
-    {% for course in user_courses %}
+    {% for course in courses %}
         <div class="course">
             <h1><a href="{% url 'course_detail' pk=course.pk %}">{{ course.name }}</a></h1>
         </div>

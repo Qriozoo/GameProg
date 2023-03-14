@@ -1,0 +1,13 @@
+{% extends 'profile/base.html' %}
+
+{% block content %}
+    <div class="course">
+        <h1>{{ course.name }}</h1>
+
+        {% if user.is_authenticated and not subscribed%}
+            <a class="btn btn-default" href="{% url 'course_subscribe' pk=course.pk %}">Записаться</a>
+        {% endif %}
+
+        <p>{{ course.description|linebreaksbr }}</p>
+    </div>
+{% endblock %}

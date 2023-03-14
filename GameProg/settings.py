@@ -81,7 +81,7 @@ DATABASES = {
                 'ENGINE': 'django.db.backends.postgresql',
                 'NAME': 'gameprog',
                 'USER': 'qriozoo',
-                'PASSWORD': '',
+                'PASSWORD': 'pass',
                 'HOST': 'localhost',
                 'PORT': '',
             }
