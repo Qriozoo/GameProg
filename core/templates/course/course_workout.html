@@ -1,0 +1,20 @@
+{% extends 'profile/base.html' %}
+
+{% block content %}
+    <div class="course">
+        <h1>{{ course.name }}</h1>
+        <h1>Ваше задание:</h1>
+        {% if task %}
+            <form action="{% url 'task_train' cpk=course.pk tpk=task.pk %}">
+                <input type="submit" value="Решать" />
+            </form>
+            <form action="{% url 'course_workout' pk=course.pk %}">
+                <input type="submit" value="Пропустить" />
+            </form>
+            <p>{{ task.name|linebreaksbr }}</p>
+            <p>{{ task.text|linebreaksbr }}</p>
+        {% else %}
+            <p>нет заданий</p>
+        {% endif %}
+    </div>
+{% endblock %}

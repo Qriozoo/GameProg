@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class Course(models.Model):    
@@ -24,7 +25,6 @@ class Student(models.Model):
 
 
 class Theme(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
 
     def __str__(self):
@@ -32,6 +32,7 @@ class Theme(models.Model):
 
 
 class Task(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     themes = models.ManyToManyField(Theme)
     name = models.CharField(max_length=30)
     text = models.TextField()
@@ -42,7 +43,9 @@ class Task(models.Model):
 
 
 class Solution(models.Model):
+    task = models.ManyToManyField(Task)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
     text = models.TextField()
 
 

@@ -1,8 +1,13 @@
+import random
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.admin import AdminSite
-from .models import Course, Student
+
+from .models import Course, Student, Theme, Task
+from .forms import SolutionForm
+from .executor import test_script
 
 
 @login_required
@@ -32,6 +37,36 @@ def course_detail(request, pk):
         user_courses = []
     subscribed =  True if course in user_courses else False
     return render(request, 'course/course_detail.html', {'course': course, 'subscribed': subscribed})
+
+@login_required
+def course_workout(request, pk):
+    course = get_object_or_404(Course, pk=pk)
+    course_tasks = Task.objects.filter(course=course)
+    
+    if len(course_tasks) != 0:
+        task = course_tasks[random.randint(0, len(course_tasks) - 1)]
+    else:
+        task = False
+    return render(request, 'course/course_workout.html', {'course': course, 'task': task})
+
+@login_required
+def task_train(request, cpk, tpk):
+    course = get_object_or_404(Course, pk=cpk)
+    task = get_object_or_404(Task, pk=tpk)
+
+    if request.method == "POST":
+        form = SolutionForm(request.POST)
+        if form.is_valid():
+            solution = form.save(commit=False)
+            test_script(solution.text, task.test)
+            #post.author = request.user
+            #post.save()
+            #return redirect('post_detail', pk=post.pk)
+            return render(request, 'course/task_train.html', {'course': course, 'task': task, 'form': form})
+    else:
+        form = SolutionForm()
+
+    return render(request, 'course/task_train.html', {'course': course, 'task': task, 'form': form})
 
 @login_required
 def course_subscribe(request, pk):
