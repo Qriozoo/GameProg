@@ -31,22 +31,38 @@ class Theme(models.Model):
         return self.name
 
 
+class Solution(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
+    text = models.TextField()
+    likes = models.PositiveIntegerField(default=0)
+
+    def save_solution(self, tpk, user):
+        solution = Solution.objects.create(
+            user=user,
+            date=timezone.now(),
+            text=self.text,
+            )
+        task = Task.objects.get(pk=tpk)
+        task.solutions.add(solution)
+
+
 class Task(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     themes = models.ManyToManyField(Theme)
     name = models.CharField(max_length=30)
+
     text = models.TextField()
     test = models.TextField()
 
+    level = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(3)]
+    )
+
+    solutions = models.ManyToManyField(Solution)
+
     def __str__(self):
         return self.name
-
-
-class Solution(models.Model):
-    task = models.ManyToManyField(Task)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now)
-    text = models.TextField()
 
 
 """class Student(models.Model):

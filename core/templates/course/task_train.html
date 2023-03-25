@@ -12,7 +12,11 @@
         <h1>Решение</h1>
         <form method="POST" class="solution-form">{% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="save btn btn-default">Отправить</button>
+            <button type="submit" class="save btn btn-default" name="Test">Протестировать</button>
+            {% for test in result %}
+                <p>{{ test }}</p>
+            {% endfor %}
+            <button type="submit" class="save btn btn-default" name="Save">Отправить</button>
         </form>
     </div>
 {% endblock %}

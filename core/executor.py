@@ -1,8 +1,5 @@
 def test_script(script, test):
-    print(script)
-    print(test)
-
-    params = '5'
+    result = []
     answ_func = """%s \nansw = sol_func(%s)"""
 
     try:
@@ -17,11 +14,11 @@ def test_script(script, test):
             return_workaround = loc['answ']
 
             if return_workaround == out_data:
-                print("%s - %s" % (test_num, "True"))
+                result.append("%s - %s" % (test_num, "True"))
             else:
-                print("%s - %s" % (test_num, "False"))
-
+                result.append("%s - %s" % (test_num, "False"))
+        return result
 
     except Exception as ex:
-        print(ex)
+        return ex
     return

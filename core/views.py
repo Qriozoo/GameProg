@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.admin import AdminSite
 
-from .models import Course, Student, Theme, Task
+from .models import Course, Student, Task, Solution
 from .forms import SolutionForm
 from .executor import test_script
 
@@ -53,20 +53,62 @@ def course_workout(request, pk):
 def task_train(request, cpk, tpk):
     course = get_object_or_404(Course, pk=cpk)
     task = get_object_or_404(Task, pk=tpk)
-
-    if request.method == "POST":
+    if request.method == "POST" and 'Test' in request.POST:
         form = SolutionForm(request.POST)
         if form.is_valid():
             solution = form.save(commit=False)
-            test_script(solution.text, task.test)
-            #post.author = request.user
-            #post.save()
-            #return redirect('post_detail', pk=post.pk)
-            return render(request, 'course/task_train.html', {'course': course, 'task': task, 'form': form})
+            result = test_script(solution.text, task.test)
+            return render(
+                request,
+                'course/task_train.html',
+                {'course': course, 'task': task, 'form': form, 'result': result}
+                )
+    elif request.method == "POST" and 'Save' in request.POST:
+        form = SolutionForm(request.POST)
+        if form.is_valid():
+            solution = form.save(commit=False)
+            result = test_script(solution.text, task.test)
+            test_passed = True
+            for test in result:
+                if 'False' in test:
+                    test_passed = False
+                    break
+            if test_passed:
+                solution.save_solution(task.pk, request.user)
+                return redirect(
+                    'task_solutions',
+                    cpk=course.pk,
+                    tpk=task.pk
+                    )
+            else:
+                #post.author = request.user
+                #post.save()
+                #return redirect('post_detail', pk=post.pk)
+                return render(
+                    request,
+                    'course/task_train.html',
+                    {'course': course, 'task': task, 'form': form, 'result': result}
+                    )
     else:
         form = SolutionForm()
 
     return render(request, 'course/task_train.html', {'course': course, 'task': task, 'form': form})
+
+@login_required
+def task_solutions(request, cpk, tpk):
+    course = get_object_or_404(Course, pk=cpk)
+    task = get_object_or_404(Task, pk=tpk)
+
+    print(task.solutions.all())
+    solutions = []
+    for solution in task.solutions.all():
+        solutions.append(solution)
+
+    return render(request,'course/task_solutions.html', {
+        'course': course,
+        'task': task,
+        'solutions': solutions
+        })
 
 @login_required
 def course_subscribe(request, pk):

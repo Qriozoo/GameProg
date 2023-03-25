@@ -1,0 +1,19 @@
+{% extends 'profile/base.html' %}
+
+{% block content %}
+    <div class="task_solutions">
+        <h1>Условие</h1>
+        <p>{{ task.name|linebreaksbr }}</p>
+        <p>{{ task.text|linebreaksbr }}</p>
+
+        <h1>Решения</h1>
+        {% for solution in solutions %}
+            <div class="solution">
+                <p>Автор: {{ solution.user }}</p>
+                <p>{{ solution.text }}</p>
+                <p>Дата: {{ solution.date }}</p>
+                <p>Лайков: {{ solution.likes }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
