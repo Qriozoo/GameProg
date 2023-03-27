@@ -12,16 +12,42 @@ from .executor import test_script
 
 @login_required
 def dashboard(request):
-    #print(User.is_superuser.)
+    user_exp, user_lvl, lvl_up_exp = Solution.get_lvl_data(user=request.user)
+
     try:
         user_courses = Student.objects.get(user=request.user).courses.all()
     except Student.DoesNotExist:
         user_courses = []
-    if request.user.is_superuser:
-        #return render(request, '/admin', {})
-        return render(request, 'Profile/dashboard.html', {'user_courses': user_courses})
-    else:
-        return render(request, 'Profile/dashboard.html', {'user_courses': user_courses})
+
+    return render(request, 'Profile/dashboard.html', {
+        'user_courses': user_courses,
+        'user_exp': user_exp,
+        'user_lvl': user_lvl,
+        'lvl_up_exp': lvl_up_exp})
+
+@login_required
+def top_list(request):
+    user_list = Student.objects.get().user
+
+    user_dict = {}
+    for user in (user_list,):
+        user_exp, user_lvl, lvl_up_exp = Solution.get_lvl_data(user=user)
+        user_dict[user_exp] = '%s    level:%s exp:%s/%s' % (user.username, user_lvl, user_exp, lvl_up_exp)
+    user_dict_sorted = dict(sorted(user_dict.items()))
+    
+    user_lvl_info = []
+    num = 1
+    for key in user_dict_sorted:
+        user_lvl_info.append('%s: %s' % (num, user_dict_sorted[key]))
+        num += 1
+
+
+    """user_lvl_info = []
+    for user in (user_list,):
+        user_exp, user_lvl, lvl_up_exp = Solution.get_lvl_data(user=user)
+        user_lvl_info.append('%s    level:%s exp:%s/%s' % (user.username, user_lvl, user_exp, lvl_up_exp))"""
+
+    return render(request, 'Profile/top.html', {'user_lvl_info': user_lvl_info})
     
 def course_list(request):
     """posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')

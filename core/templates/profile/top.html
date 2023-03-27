@@ -1,0 +1,7 @@
+{% extends 'profile/base.html' %}
+
+{% block content %}
+    {% for user in user_lvl_info %}
+        <p>{{user}}</p>
+    {% endfor %}
+{% endblock %}

@@ -2,6 +2,8 @@
 
 {% block content %}
     <h1>Dashboard page of {{user.username}}</h1>
+    <p>Current level: {{user_lvl}}</p>
+    <p><small>exp: {{user_exp}}/{{lvl_up_exp}}</small></p>
     <h1><p>Ваши курсы:</p></h1>
     {% for course in user_courses %}
         <div class="course">

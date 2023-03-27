@@ -46,6 +46,30 @@ class Solution(models.Model):
         task = Task.objects.get(pk=tpk)
         task.solutions.add(solution)
 
+    @staticmethod
+    def get_lvl_data(user):
+        user_exp = 0
+
+        user_solutions = Solution.objects.get(user=user)
+
+        solved_tasks = []
+        for solution in (user_solutions,):
+            task = Task.objects.get(solutions=solution)
+            solved_tasks.append(task)
+        for task in solved_tasks:
+            user_exp += pow(2, task.level)
+
+        base_level_up = 10
+        user_lvl = 1
+        while True:
+            if user_exp >= (base_level_up * user_lvl):
+                user_lvl += 1
+                user_exp -= (base_level_up * user_lvl)
+            else:
+                lvl_up_exp = (base_level_up * user_lvl)
+                break
+        return user_exp, user_lvl, lvl_up_exp
+
 
 class Task(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
