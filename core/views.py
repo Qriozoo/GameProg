@@ -27,13 +27,17 @@ def dashboard(request):
 
 @login_required
 def top_list(request):
-    user_list = Student.objects.get().user
+    students = Student.objects.all()
+
+    user_list = []
+    for student in students:
+        user_list.append(student.user)
 
     user_dict = {}
-    for user in (user_list,):
+    for user in user_list:
         user_exp, user_lvl, lvl_up_exp = Solution.get_lvl_data(user=user)
         user_dict[user_exp] = '%s    level:%s exp:%s/%s' % (user.username, user_lvl, user_exp, lvl_up_exp)
-    user_dict_sorted = dict(sorted(user_dict.items()))
+    user_dict_sorted = dict(sorted(user_dict.items(), reverse=True))
     
     user_lvl_info = []
     num = 1
@@ -68,9 +72,24 @@ def course_detail(request, pk):
 def course_workout(request, pk):
     course = get_object_or_404(Course, pk=pk)
     course_tasks = Task.objects.filter(course=course)
-    
+
     if len(course_tasks) != 0:
-        task = course_tasks[random.randint(0, len(course_tasks) - 1)]
+        task_list = []
+        for task in list(course_tasks):
+            task_list.append(task)
+        rc = True
+        while rc:
+            if task_list != []:
+                rand_task = task_list.pop(random.randint(0, len(task_list) - 1))
+                s_user_list = []
+                for solution in rand_task.solutions.all():
+                    s_user_list.append(solution.user)
+                if request.user not in s_user_list:
+                    task = rand_task
+                    rc = False
+            else:
+                task = False
+                break
     else:
         task = False
     return render(request, 'course/course_workout.html', {'course': course, 'task': task})
@@ -125,7 +144,6 @@ def task_solutions(request, cpk, tpk):
     course = get_object_or_404(Course, pk=cpk)
     task = get_object_or_404(Task, pk=tpk)
 
-    print(task.solutions.all())
     solutions = []
     for solution in task.solutions.all():
         solutions.append(solution)

@@ -32,7 +32,7 @@ class Theme(models.Model):
 
 
 class Solution(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
     text = models.TextField()
     likes = models.PositiveIntegerField(default=0)
@@ -50,10 +50,9 @@ class Solution(models.Model):
     def get_lvl_data(user):
         user_exp = 0
 
-        user_solutions = Solution.objects.get(user=user)
-
+        user_solutions = Solution.objects.filter(user=user)
         solved_tasks = []
-        for solution in (user_solutions,):
+        for solution in user_solutions:
             task = Task.objects.get(solutions=solution)
             solved_tasks.append(task)
         for task in solved_tasks:
@@ -83,7 +82,7 @@ class Task(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(3)]
     )
 
-    solutions = models.ManyToManyField(Solution)
+    solutions = models.ManyToManyField(Solution, blank=True, unique=False)
 
     def __str__(self):
         return self.name
