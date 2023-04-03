@@ -36,7 +36,8 @@ def top_list(request):
     user_dict = {}
     for user in user_list:
         user_exp, user_lvl, lvl_up_exp = Solution.get_lvl_data(user=user)
-        user_dict[user_exp] = '%s    level:%s exp:%s/%s' % (user.username, user_lvl, user_exp, lvl_up_exp)
+        all_exp = 10 * (user_lvl - 1) + user_exp
+        user_dict[all_exp] = '%s    level:%s exp:%s/%s' % (user.username, user_lvl, user_exp, lvl_up_exp)
     user_dict_sorted = dict(sorted(user_dict.items(), reverse=True))
     
     user_lvl_info = []

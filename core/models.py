@@ -62,8 +62,8 @@ class Solution(models.Model):
         user_lvl = 1
         while True:
             if user_exp >= (base_level_up * user_lvl):
-                user_lvl += 1
                 user_exp -= (base_level_up * user_lvl)
+                user_lvl += 1
             else:
                 lvl_up_exp = (base_level_up * user_lvl)
                 break
