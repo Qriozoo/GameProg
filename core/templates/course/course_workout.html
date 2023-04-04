@@ -12,6 +12,8 @@
                 <input type="submit" value="Пропустить" />
             </form>
             <p>{{ task.name|linebreaksbr }}</p>
+            <p>Уровень сложности: {{ task.level|linebreaksbr }}</p>
+            <p>Темы: {{ themes|linebreaksbr }}</p>
             <p>{{ task.text|linebreaksbr }}</p>
         {% else %}
             <p>нет заданий</p>

@@ -23,5 +23,6 @@ def test_script(script, test):
         return result
 
     except Exception as ex:
-        return ex
+        result.append("%s" % ex)
+        return result
     return

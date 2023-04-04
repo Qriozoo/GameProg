@@ -73,6 +73,7 @@ def course_detail(request, pk):
 def course_workout(request, pk):
     course = get_object_or_404(Course, pk=pk)
     course_tasks = Task.objects.filter(course=course)
+    themes = ""
 
     if len(course_tasks) != 0:
         task_list = []
@@ -87,18 +88,25 @@ def course_workout(request, pk):
                     s_user_list.append(solution.user)
                 if request.user not in s_user_list:
                     task = rand_task
+                    for theme in task.themes.all():
+                        themes += "%s " % theme
                     rc = False
             else:
                 task = False
                 break
     else:
         task = False
-    return render(request, 'course/course_workout.html', {'course': course, 'task': task})
+    return render(request, 'course/course_workout.html', {'course': course, 'task': task, 'themes': themes})
 
 @login_required
 def task_train(request, cpk, tpk):
     course = get_object_or_404(Course, pk=cpk)
     task = get_object_or_404(Task, pk=tpk)
+
+    themes = ""
+    for theme in task.themes.all():
+        themes += "%s " % theme
+
     if request.method == "POST" and 'Test' in request.POST:
         form = SolutionForm(request.POST)
         if form.is_valid():
@@ -107,7 +115,11 @@ def task_train(request, cpk, tpk):
             return render(
                 request,
                 'course/task_train.html',
-                {'course': course, 'task': task, 'form': form, 'result': result}
+                {'course': course,
+                 'task': task,
+                 'themes': themes,
+                 'form': form,
+                 'result': result}
                 )
     elif request.method == "POST" and 'Save' in request.POST:
         form = SolutionForm(request.POST)
@@ -127,23 +139,35 @@ def task_train(request, cpk, tpk):
                     tpk=task.pk
                     )
             else:
-                #post.author = request.user
-                #post.save()
-                #return redirect('post_detail', pk=post.pk)
                 return render(
                     request,
                     'course/task_train.html',
-                    {'course': course, 'task': task, 'form': form, 'result': result}
+                    {'course': course,
+                     'task': task,
+                     'themes': themes,
+                     'form': form,
+                     'result': result}
                     )
     else:
         form = SolutionForm()
 
-    return render(request, 'course/task_train.html', {'course': course, 'task': task, 'form': form})
+    return render(
+        request,
+        'course/task_train.html',
+        {'course': course,
+        'task': task,
+        'themes': themes,
+        'form': form
+        })
 
 @login_required
 def task_solutions(request, cpk, tpk):
     course = get_object_or_404(Course, pk=cpk)
     task = get_object_or_404(Task, pk=tpk)
+
+    themes = ""
+    for theme in task.themes.all():
+        themes += "%s " % theme
 
     solutions = []
     for solution in task.solutions.all():
@@ -152,6 +176,7 @@ def task_solutions(request, cpk, tpk):
     return render(request,'course/task_solutions.html', {
         'course': course,
         'task': task,
+        'themes': themes,
         'solutions': solutions
         })
 
