@@ -5,14 +5,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.admin import AdminSite
 
-from .models import Course, Student, Task, Solution
+from .models import Course, Student, Task, Solution, Achievement
 from .forms import SolutionForm
 from .executor import test_script
 
 
 @login_required
 def dashboard(request):
-    user_exp, user_lvl, lvl_up_exp = Solution.get_lvl_data(user=request.user)
+    user_exp, user_lvl, lvl_up_exp, user_achievements = Solution.get_progress_data(user=request.user)
+
+    achievements_list = Achievement.objects.all()
+    locked_achievements = []
+    for achievement in achievements_list:
+        if achievement not in user_achievements:
+            locked_achievements.append(achievement)
 
     try:
         user_courses = Student.objects.get(user=request.user).courses.all()
@@ -23,7 +29,9 @@ def dashboard(request):
         'user_courses': user_courses,
         'user_exp': user_exp,
         'user_lvl': user_lvl,
-        'lvl_up_exp': lvl_up_exp})
+        'lvl_up_exp': lvl_up_exp,
+        'user_achievements': user_achievements,
+        'locked_achievements': locked_achievements})
 
 @login_required
 def top_list(request):
@@ -35,9 +43,15 @@ def top_list(request):
 
     user_dict = {}
     for user in user_list:
-        user_exp, user_lvl, lvl_up_exp = Solution.get_lvl_data(user=user)
+        user_exp, user_lvl, lvl_up_exp, user_achievements = Solution.get_progress_data(user=user)
         all_exp = 10 * (user_lvl - 1) + user_exp
-        user_dict[all_exp] = '%s    level:%s exp:%s/%s' % (user.username, user_lvl, user_exp, lvl_up_exp)
+        user_dict[all_exp] = '%s    level:%s exp:%s/%s\n achievements:%s' % (
+            user.username,
+            user_lvl,
+            user_exp,
+            lvl_up_exp,
+            len(user_achievements)
+            )
     user_dict_sorted = dict(sorted(user_dict.items(), reverse=True))
     
     user_lvl_info = []
@@ -45,12 +59,6 @@ def top_list(request):
     for key in user_dict_sorted:
         user_lvl_info.append('%s: %s' % (num, user_dict_sorted[key]))
         num += 1
-
-
-    """user_lvl_info = []
-    for user in (user_list,):
-        user_exp, user_lvl, lvl_up_exp = Solution.get_lvl_data(user=user)
-        user_lvl_info.append('%s    level:%s exp:%s/%s' % (user.username, user_lvl, user_exp, lvl_up_exp))"""
 
     return render(request, 'Profile/top.html', {'user_lvl_info': user_lvl_info})
     

@@ -4,10 +4,20 @@
     <h1>Dashboard page of {{user.username}}</h1>
     <p>Current level: {{user_lvl}}</p>
     <p><small>exp: {{user_exp}}/{{lvl_up_exp}}</small></p>
-    <h1><p>Ваши курсы:</p></h1>
+    <h1>Ваши курсы:</h1>
     {% for course in user_courses %}
         <div class="course">
             <h1><a href="{% url 'course_workout' pk=course.pk %}">{{ course.name }}</a></h1>
         </div>
+    {% endfor %}
+    <h1>Ваши достижения:</h1>
+    {% for achievement in user_achievements %}
+        <p>{{ achievement.name }}</p>
+        <p><small>{{ achievement.description }}</small></p>
+    {% endfor %}
+    <h1>Неполученные достижения:</h1>
+    {% for achievement in locked_achievements %}
+        <p>{{ achievement.name }}</p>
+        <p><small>{{ achievement.description }}</small></p>
     {% endfor %}
 {% endblock %}
