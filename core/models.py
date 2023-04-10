@@ -77,8 +77,11 @@ class Solution(models.Model):
             }"""
         user_stat = {}
         for solution in user_solutions:
-            task = Task.objects.get(solutions=solution)
-            solved_tasks.append(task)
+            try:
+                task = Task.objects.get(solutions=solution)
+                solved_tasks.append(task)
+            except:
+                pass
         for task in solved_tasks:
             user_exp += pow(2, task.level)
 
