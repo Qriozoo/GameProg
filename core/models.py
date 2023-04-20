@@ -116,56 +116,57 @@ class Solution(models.Model):
     def check_achievements(user_stat):
         achievements_list = Achievement.objects.all()
         user_achievements = []
-        for achievement in achievements_list:
-            achievement_condition = {
-                "course_name": achievement.condition.split("\n")[0].split("-")[1].strip(" \r"),
-                "min_sol_num": int(achievement.condition.split("\n")[1].split("-")[1].strip(" \r")),
-                "themes": achievement.condition.split("\n")[2].split("-")[1].strip(" \r"),
-                "task_level": achievement.condition.split("\n")[3].split("-")[1].strip(" \r"),
-            }
-            cond_theme_dict = {}
-            if achievement_condition["themes"] != "Any":
-                for theme_data in achievement_condition["themes"].split(","):
-                    theme_name = theme_data.split(":")[0].strip(" ")
-                    theme_pow = int(theme_data.split(":")[1].strip(" "))
-                    cond_theme_dict[theme_name] = theme_pow
-            else:
-                cond_theme_dict["Any"] = 0
-            achievement_condition["themes"] = cond_theme_dict
-
-            if achievement_condition["course_name"] == "Any":
-                stat_data = {
-                    "sol_num": 0,
-                    "theme_dict": {},
-                    "task_levels": []
+        if user_stat != {}:
+            for achievement in achievements_list:
+                achievement_condition = {
+                    "course_name": achievement.condition.split("\n")[0].split("-")[1].strip(" \r"),
+                    "min_sol_num": int(achievement.condition.split("\n")[1].split("-")[1].strip(" \r")),
+                    "themes": achievement.condition.split("\n")[2].split("-")[1].strip(" \r"),
+                    "task_level": achievement.condition.split("\n")[3].split("-")[1].strip(" \r"),
                 }
-                for course in user_stat:
-                    #TODO: Дописать обьединение статистики по курсам
-                    pass
-            else:
-                stat_data = user_stat[achievement_condition["course_name"]]
-                
-            sol_num_check = stat_data["sol_num"] >= achievement_condition["min_sol_num"]
-
-            for theme in achievement_condition["themes"].keys():
-                if theme == "Any":
-                    theme_check = True
-                    break
+                cond_theme_dict = {}
+                if achievement_condition["themes"] != "Any":
+                    for theme_data in achievement_condition["themes"].split(","):
+                        theme_name = theme_data.split(":")[0].strip(" ")
+                        theme_pow = int(theme_data.split(":")[1].strip(" "))
+                        cond_theme_dict[theme_name] = theme_pow
                 else:
-                    if theme in stat_data["theme_dict"].keys():
-                        theme_check = stat_data["theme_dict"][theme] >= achievement_condition["themes"][theme]
-                    else:
-                        theme_check = False
-                    if not theme_check:
-                            break
-            
-            if achievement_condition["task_level"] == "Any":
-                task_level_check = True
-            else:
-                task_level_check = int(achievement_condition["task_level"]) in stat_data["task_levels"]
+                    cond_theme_dict["Any"] = 0
+                achievement_condition["themes"] = cond_theme_dict
 
-            if sol_num_check and theme_check and task_level_check:
-                user_achievements.append(achievement)
+                if achievement_condition["course_name"] == "Any":
+                    stat_data = {
+                        "sol_num": 0,
+                        "theme_dict": {},
+                        "task_levels": []
+                    }
+                    for course in user_stat:
+                        #TODO: Дописать обьединение статистики по курсам
+                        pass
+                else:
+                    stat_data = user_stat[achievement_condition["course_name"]]
+                    
+                sol_num_check = stat_data["sol_num"] >= achievement_condition["min_sol_num"]
+
+                for theme in achievement_condition["themes"].keys():
+                    if theme == "Any":
+                        theme_check = True
+                        break
+                    else:
+                        if theme in stat_data["theme_dict"].keys():
+                            theme_check = stat_data["theme_dict"][theme] >= achievement_condition["themes"][theme]
+                        else:
+                            theme_check = False
+                        if not theme_check:
+                                break
+                
+                if achievement_condition["task_level"] == "Any":
+                    task_level_check = True
+                else:
+                    task_level_check = int(achievement_condition["task_level"]) in stat_data["task_levels"]
+
+                if sol_num_check and theme_check and task_level_check:
+                    user_achievements.append(achievement)
 
         return user_achievements
 
