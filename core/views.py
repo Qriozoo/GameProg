@@ -25,7 +25,7 @@ def dashboard(request):
     except Student.DoesNotExist:
         user_courses = []
 
-    return render(request, 'Profile/dashboard.html', {
+    return render(request, 'profile/dashboard.html', {
         'user_courses': user_courses,
         'user_exp': user_exp,
         'user_lvl': user_lvl,
@@ -60,7 +60,7 @@ def top_list(request):
         user_lvl_info.append('%s: %s' % (num, user_dict_sorted[key]))
         num += 1
 
-    return render(request, 'Profile/top.html', {'user_lvl_info': user_lvl_info})
+    return render(request, 'profile/top.html', {'user_lvl_info': user_lvl_info})
     
 def course_list(request):
     """posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
