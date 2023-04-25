@@ -11,7 +11,7 @@
         <div class="page-header">
             <h1><a href="/">GameProg</a></h1>
             {% if user.is_authenticated %}
-                <p class="greeting">Hello {{ user.username }} <small>(<a href="{% url 'logout' %}">Log out</a>)</small></p>
+                <p class="greeting">Приветствуем {{ user.username }} <small>(<a href="{% url 'logout' %}">Выйти</a>)</small></p>
             {% endif %}
         </div>
         <div>

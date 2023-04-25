@@ -1,8 +1,8 @@
 {% extends 'profile/base.html' %}
 
 {% block content %}
-    <h1>Dashboard page of {{user.username}}</h1>
-    <p>Current level: {{user_lvl}}</p>
+    <h1>Профиль {{user.username}}</h1>
+    <p>Текущий уровень: {{user_lvl}}</p>
     <p><small>exp: {{user_exp}}/{{lvl_up_exp}}</small></p>
     <h1>Ваши курсы:</h1>
     {% for course in user_courses %}
