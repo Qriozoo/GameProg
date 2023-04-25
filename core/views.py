@@ -44,7 +44,7 @@ def top_list(request):
     user_dict = {}
     for user in user_list:
         user_exp, user_lvl, lvl_up_exp, user_achievements = Solution.get_progress_data(user=user)
-        all_exp = 10 * (user_lvl - 1) + user_exp
+        all_exp = "%s%s" % ((10 * (user_lvl - 1) + user_exp), user.username)
         user_dict[all_exp] = '%s    уровень:%s exp:%s/%s\n достижений:%s' % (
             user.username,
             user_lvl,
@@ -53,6 +53,7 @@ def top_list(request):
             len(user_achievements)
             )
     user_dict_sorted = dict(sorted(user_dict.items(), reverse=True))
+    print(user_dict_sorted)
     
     user_lvl_info = []
     num = 1
