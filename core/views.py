@@ -41,19 +41,23 @@ def top_list(request):
     for student in students:
         user_list.append(student.user)
 
+    exp_dict = {}
     user_dict = {}
     for user in user_list:
         user_exp, user_lvl, lvl_up_exp, user_achievements = Solution.get_progress_data(user=user)
-        all_exp = "%s%s" % ((10 * (user_lvl - 1) + user_exp), user.username)
-        user_dict[all_exp] = '%s    уровень:%s exp:%s/%s\n достижений:%s' % (
+        all_exp = 10 * (user_lvl - 1) + user_exp
+        exp_dict[user.username] = all_exp
+        user_dict[user.username] = '%s    уровень:%s exp:%s/%s\n достижений:%s' % (
             user.username,
             user_lvl,
             user_exp,
             lvl_up_exp,
             len(user_achievements)
             )
-    user_dict_sorted = dict(sorted(user_dict.items(), reverse=True))
-    print(user_dict_sorted)
+    user_dict_sorted = {}
+    exp_dict = dict(sorted(exp_dict.items(), key=lambda item: item[1], reverse=True))
+    for user in exp_dict:
+        user_dict_sorted[user] = user_dict[user]
     
     user_lvl_info = []
     num = 1
